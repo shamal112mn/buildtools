@@ -1,4 +1,14 @@
-  def username = ""
+#!/usr/bin/env groovy 
+package com.lib
+ 
+
+
+def runPipeline() {
+def commonFunctions = new CommonFunction()
+def triggerUser = commonFunctions.getBuildUser() 
+def isTriggerUser = commonFunctions.isAdmin(triggerUser)  
+
+def username = ""
   def environment = ""
   def gitCommitHash = ""
   def dockerImage = ""
@@ -72,7 +82,7 @@ def slavePodTemplate = """
               stage("Docker Push") {
                 docker.withRegistry( '', registryCredentials ) {
                   dockerImage.push("${gitCommitHash}")
-                  if (params.PUSH_LATEST) {
+                  if (params.PUSH_LATEST && isTriggerUser) {
                     dockerImage.push("latest")
                   }
                 }
